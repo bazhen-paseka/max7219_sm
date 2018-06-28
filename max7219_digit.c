@@ -1,8 +1,8 @@
 #include "stm32f1xx_hal.h"
 #include "max7219_digit.h"
 
-#define CS_PORT GPIOB
-#define CS_PIN  GPIO_PIN_6
+#define CS_PORT SPI1_CS_GPIO_Port
+#define CS_PIN  SPI1_CS_Pin
 
 void max7219_write_strob(void)
 {
