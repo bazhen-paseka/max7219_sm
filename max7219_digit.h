@@ -1,17 +1,15 @@
-#pragma once
+#ifndef MAX7219_DIGIT_H_INCLUDED
+#define MAX7219_DIGIT_H_INCLUDED
 
-// correct in "max7219_digit.c" PORT and PIN for CS-strob
+typedef struct
+{
+	SPI_HandleTypeDef	*spi;
+	GPIO_TypeDef 		*cs_port;
+    uint16_t 			 cs_pin;
+} max7219_struct;
 
-void max7219_print_number(SPI_HandleTypeDef * hspi, int number,int position);
-void max7219_print_one_digit(SPI_HandleTypeDef * hspi,int position,int digit);
-void max7219_init(SPI_HandleTypeDef * hspi);
-void max7219_write_strob(void);
+void max7219_init(max7219_struct *max7219_handler);
+void max7219_print_value(max7219_struct *max7219_handler, uint32_t value, uint8_t position);
 
-//  example for SPI1:
-//
-//  max7219_init(&hspi1);
-// 	max7219_print_number(&hspi1,0000,0);
-//	max7219_print_number(&hspi1,1111,1);
-
-
+#endif 	//	MAX7219_DIGIT_H_INCLUDED
 
