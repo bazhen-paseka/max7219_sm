@@ -67,25 +67,25 @@ void max7219_init4(	max7219_struct 			*_max7219_handler	,
 					max7219_Shutdown 		_shutdown 			) {
 
 	// test - Off
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<2; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ i*2+1] = WorkMode ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	// Decode Mode - No. 1 in 1
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<2; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_DECODE_MODE ;  _max7219_handler->data[ i*2+1] = _decodemode ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	// Intensity x/32
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<2; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_INTENSITY ;  _max7219_handler->data[ i*2+1] = _intensity ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	//Scan Limit - All
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<2; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ i*2+1] = _scanlimit ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
@@ -93,7 +93,7 @@ void max7219_init4(	max7219_struct 			*_max7219_handler	,
 	// Shutdown - none
 	// myTrans[1] -> 00 sleep
 	// myTrans[1] -> 01 work
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<2; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_SHUTDOWN ;  _max7219_handler->data[ i*2+1] = _shutdown ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
