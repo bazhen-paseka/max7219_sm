@@ -66,6 +66,10 @@ void max7219_print_value(max7219_struct *max7219_handler,uint32_t value, positio
 	{
 		position = 0;
 	}
+	_max7219_print_one_digit(*max7219_handler, position + 8, (value/10000000) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 7, (value/1000000 ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 6, (value/100000  ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 5, (value/10000   ) % 10 );
 
 	_max7219_print_one_digit(*max7219_handler, position + 4, (value/1000) % 10 );
 	_max7219_print_one_digit(*max7219_handler, position + 3, (value/100 ) % 10 );
