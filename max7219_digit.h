@@ -140,10 +140,17 @@ typedef enum {
 						max7219_Shutdown 		_shutdown 			);
 
 	void max7219_init4	( max7219_struct 		*max7219_handler	,
+						max7219_Display_Test	_workmode			,
 						max7219_Decode_Mode 	_decodemode			,
 						max7219_LED_Intensity	_intensity			,
 						max7219_Scan_Limit 		_scanlimit	 		,
 						max7219_Shutdown 		_shutdown 			);
+
+	void max7219_print_value4(	max7219_struct	*max7219_handler	,
+								uint32_t		value1				,
+								uint32_t		value2				,
+								uint32_t		value3				,
+								uint32_t		value4				);
 
 	void max7219_print_value(	max7219_struct	*max7219_handler	,
 								uint32_t		value1				,

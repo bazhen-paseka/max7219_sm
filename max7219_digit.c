@@ -61,31 +61,32 @@ void max7219_init2(	max7219_struct 			*_max7219_handler	,
 /***************************************************************************************/
 
 void max7219_init4(	max7219_struct 			*_max7219_handler	,
+					max7219_Display_Test	_workmode			,
 					max7219_Decode_Mode 	_decodemode			,
 					max7219_LED_Intensity	_intensity			,
 					max7219_Scan_Limit 		_scanlimit			,
 					max7219_Shutdown 		_shutdown 			) {
 
 	// test - Off
-	for (int i=0; i<2; i++) {
-		_max7219_handler->data[ i*2 ] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ i*2+1] = WorkMode ;
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ i*2+1] = _workmode ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	// Decode Mode - No. 1 in 1
-	for (int i=0; i<2; i++) {
+	for (int i=0; i< MAX7219_QNT; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_DECODE_MODE ;  _max7219_handler->data[ i*2+1] = _decodemode ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	// Intensity x/32
-	for (int i=0; i<2; i++) {
+	for (int i=0; i< MAX7219_QNT; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_INTENSITY ;  _max7219_handler->data[ i*2+1] = _intensity ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
 
 	//Scan Limit - All
-	for (int i=0; i<2; i++) {
+	for (int i=0; i< MAX7219_QNT; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ i*2+1] = _scanlimit ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
@@ -93,7 +94,7 @@ void max7219_init4(	max7219_struct 			*_max7219_handler	,
 	// Shutdown - none
 	// myTrans[1] -> 00 sleep
 	// myTrans[1] -> 01 work
-	for (int i=0; i<2; i++) {
+	for (int i=0; i< MAX7219_QNT; i++) {
 		_max7219_handler->data[ i*2 ] = ADDR_SHUTDOWN ;  _max7219_handler->data[ i*2+1] = _shutdown ;
 	}
 	_max7219_push_data( *_max7219_handler ) ;
@@ -125,10 +126,10 @@ void max7219_print_value(	max7219_struct	*max7219_handler	,
 							uint32_t		value2				,
 							position_enum 	position			) {
 
-	_max7219_print_one_digit(*max7219_handler, position + 4, (value1/1000) % 10 , (value2/1000) % 10 );
-	_max7219_print_one_digit(*max7219_handler, position + 3, (value1/100 ) % 10 , (value2/100 ) % 10 );
-	_max7219_print_one_digit(*max7219_handler, position + 2, (value1/10  ) % 10 , (value2/10  ) % 10 );
-	_max7219_print_one_digit(*max7219_handler, position + 1, (value1     ) % 10 , (value2     ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 4, (value2/1000) % 10 , (value1/1000) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 3, (value2/100 ) % 10 , (value1/100 ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 2, (value2/10  ) % 10 , (value1/10  ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 1, (value2     ) % 10 , (value1     ) % 10 );
 }
 /***************************************************************************************/
 /***************************************************************************************/
@@ -162,3 +163,12 @@ uint8_t inverse_order_in_byte (uint8_t 		input) {
     return var_u8 ;
 }
 /***************************************************************************************/
+
+void max7219_print_value4(	max7219_struct	*max7219_handler	,
+							uint32_t		value1				,
+							uint32_t		value2				,
+							uint32_t		value3				,
+							uint32_t		value4				) {
+	max7219_print_value( max7219_handler, value1, value3, 4 );
+	max7219_print_value( max7219_handler, value2, value4, 0 );
+}
