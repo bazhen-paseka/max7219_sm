@@ -89,6 +89,24 @@ typedef enum
 	DecodeForDigit_7_0	= 0xFF ,
 }		max7219_Decode_Mode ;
 
+typedef enum {
+	ADDR_NO_OP 			= 0x00 ,
+	ADDR_DIGIT_0		= 0x01 ,
+	ADDR_DIGIT_1 		= 0x02 ,
+	ADDR_DIGIT_2 		= 0x03 ,
+	ADDR_DIGIT_3 		= 0x04 ,
+	ADDR_DIGIT_4 		= 0x05 ,
+	ADDR_DIGIT_5 		= 0x06 ,
+	ADDR_DIGIT_6 		= 0x07 ,
+	ADDR_DIGIT_7		= 0x08 ,
+	ADDR_DECODE_MODE 	= 0x09 ,
+	ADDR_INTENSITY 		= 0x0A ,
+	ADDR_SCAN_LIMIT 	= 0x0B ,
+	ADDR_SHUTDOWN		= 0x0C ,
+	ADDR_EMPTY			= 0x0D ,
+	ADDR_DISPLAY_TEST	= 0x0F
+}		Register_Address_Map	;
+
 
 /*
 **************************************************************************
@@ -96,7 +114,9 @@ typedef enum
 **************************************************************************
 */
 
-
+	#define PANEL_QNT				4
+	#define LINE_IN_PANEL			8
+	#define	WRITE_STROB_DELAY		10
 
 /*
 **************************************************************************
@@ -109,6 +129,8 @@ typedef struct
 	SPI_HandleTypeDef	*spi;
 	GPIO_TypeDef 		*cs_port;
     uint16_t 			 cs_pin;
+    uint8_t				data [LINE_IN_PANEL];
+	uint8_t				panel[PANEL_QNT][LINE_IN_PANEL];
 } max7219_struct;
 
 typedef struct
@@ -157,11 +179,11 @@ typedef enum
 	void max7219_init(max7219_struct *max7219_handler);
 	void max7219_print_value(max7219_struct *max7219_handler, uint32_t value, position_enum position);
 
-//	void max7219_init	( max7219_struct 		*max7219_handler	,
-//						max7219_Decode_Mode 	_decodemode			,
-//						max7219_LED_Intensity	_intensity			,
-//						max7219_Scan_Limit 		_scanlimit	 		,
-//						max7219_Shutdown 		_shutdown 			) ;
+	void max7219_init2	( max7219_struct 		*max7219_handler	,
+						max7219_Decode_Mode 	_decodemode			,
+						max7219_LED_Intensity	_intensity			,
+						max7219_Scan_Limit 		_scanlimit	 		,
+						max7219_Shutdown 		_shutdown 			) ;
 //
 //	void Max7219_struct_init (	max7219_struct 		*handler		,
 //								SPI_HandleTypeDef	*_spi			,
