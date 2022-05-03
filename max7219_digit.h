@@ -1,6 +1,8 @@
 #ifndef MAX7219_DIGIT_H_INCLUDED
 #define MAX7219_DIGIT_H_INCLUDED
 
+	#include "main.h"
+
 typedef struct
 {
 	SPI_HandleTypeDef	*spi;

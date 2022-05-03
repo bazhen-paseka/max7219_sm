@@ -1,5 +1,5 @@
 
-#include "stm32f1xx_hal.h"
+//#include "stm32f1xx_hal.h"
 #include "max7219_digit.h"
 
 #define BYTE_IN_SPI_PACKAGE		2
