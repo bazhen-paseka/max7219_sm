@@ -12,52 +12,6 @@ void _local_delay				( uint32_t 			_delay_u32			) ;
 uint8_t inverse_order_in_byte	( uint8_t 			_input 				) ;
 
 /***************************************************************************************/
-
-//void max7219_init2(	max7219_struct 			*_max7219_handler	,
-//					max7219_Decode_Mode 	_decodemode			,
-//					max7219_LED_Intensity	_intensity			,
-//					max7219_Scan_Limit 		_scanlimit			,
-//					max7219_Shutdown 		_shutdown 			) {
-//
-//	// test - Off
-//	_max7219_handler->data[0] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[1] = WorkMode ;
-//	_max7219_handler->data[2] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[3] = WorkMode ;
-//	_max7219_handler->data[4] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[5] = WorkMode ;
-//	_max7219_handler->data[6] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[7] = WorkMode ;
-//	_max7219_push_data( *_max7219_handler ) ;
-//
-//	// Decode Mode - No. 1 in 1
-//	_max7219_handler->data[0] = ADDR_DECODE_MODE ;  _max7219_handler->data[1] = _decodemode ;
-//	_max7219_handler->data[2] = ADDR_DECODE_MODE ;  _max7219_handler->data[3] = _decodemode ;
-//	_max7219_handler->data[4] = ADDR_DECODE_MODE ;  _max7219_handler->data[5] = _decodemode ;
-//	_max7219_handler->data[6] = ADDR_DECODE_MODE ;  _max7219_handler->data[7] = _decodemode ;
-//	_max7219_push_data( *_max7219_handler ) ;
-//
-//	// Intensity x/32
-//	_max7219_handler->data[0] = ADDR_INTENSITY ;  _max7219_handler->data[1] = _intensity ;
-//	_max7219_handler->data[2] = ADDR_INTENSITY ;  _max7219_handler->data[3] = _intensity ;
-//	_max7219_handler->data[4] = ADDR_INTENSITY ;  _max7219_handler->data[5] = _intensity ;
-//	_max7219_handler->data[6] = ADDR_INTENSITY ;  _max7219_handler->data[7] = _intensity ;
-//	_max7219_push_data( *_max7219_handler ) ;
-//
-//	//Scan Limit - All
-//	_max7219_handler->data[0] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[1] = _scanlimit ;
-//	_max7219_handler->data[2] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[3] = _scanlimit ;
-//	_max7219_handler->data[4] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[5] = _scanlimit ;
-//	_max7219_handler->data[6] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[7] = _scanlimit ;
-//	_max7219_push_data( *_max7219_handler ) ;
-//
-//	// Shutdown - none
-//	// myTrans[1] -> 00 sleep
-//	// myTrans[1] -> 01 work
-//	_max7219_handler->data[0] = ADDR_SHUTDOWN;  _max7219_handler->data[1] = _shutdown;
-//	_max7219_handler->data[2] = ADDR_SHUTDOWN;  _max7219_handler->data[3] = _shutdown;
-//	_max7219_handler->data[4] = ADDR_SHUTDOWN;  _max7219_handler->data[5] = _shutdown;
-//	_max7219_handler->data[6] = ADDR_SHUTDOWN;  _max7219_handler->data[7] = _shutdown;
-//	_max7219_push_data( *_max7219_handler ) ;
-//}
-/***************************************************************************************/
-
 /***************************************************************************************/
 
 void max7219_init2(	max7219_struct 			*_max7219_handler	,
@@ -104,9 +58,50 @@ void max7219_init2(	max7219_struct 			*_max7219_handler	,
 	_max7219_push_data( *_max7219_handler ) ;
 }
 /***************************************************************************************/
+/***************************************************************************************/
+
+void max7219_init4(	max7219_struct 			*_max7219_handler	,
+					max7219_Decode_Mode 	_decodemode			,
+					max7219_LED_Intensity	_intensity			,
+					max7219_Scan_Limit 		_scanlimit			,
+					max7219_Shutdown 		_shutdown 			) {
+
+	// test - Off
+	for (int i=0; i<8; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ i*2+1] = WorkMode ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Decode Mode - No. 1 in 1
+	for (int i=0; i<8; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_DECODE_MODE ;  _max7219_handler->data[ i*2+1] = _decodemode ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Intensity x/32
+	for (int i=0; i<8; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_INTENSITY ;  _max7219_handler->data[ i*2+1] = _intensity ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	//Scan Limit - All
+	for (int i=0; i<8; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ i*2+1] = _scanlimit ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Shutdown - none
+	// myTrans[1] -> 00 sleep
+	// myTrans[1] -> 01 work
+	for (int i=0; i<8; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_SHUTDOWN ;  _max7219_handler->data[ i*2+1] = _shutdown ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+}
+/***************************************************************************************/
 
 void _max7219_push_data( max7219_struct 	_max7219_handler ) {
-    HAL_SPI_Transmit( _max7219_handler.spi , _max7219_handler.data , BYTE_IN_SPI_PACKAGE , SPI_PACKAGE_TIMEOUT ) ;
+    HAL_SPI_Transmit( _max7219_handler.spi , _max7219_handler.data , BYTE4_IN_SPI_PACKAGE , SPI_PACKAGE_TIMEOUT ) ;
     _max7219_write_strob( _max7219_handler ) ;
 }
 /***************************************************************************************/

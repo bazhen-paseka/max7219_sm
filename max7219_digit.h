@@ -115,9 +115,9 @@ typedef enum {
 
 	#define PANEL_QNT				2
 	#define LINE_IN_PANEL			8
-	//#define	WRITE_STROB_DELAY		10
-	#define	WRITE_STROB_DELAY		100
+	#define	WRITE_STROB_DELAY		10
 	#define BYTE_IN_SPI_PACKAGE		2
+	#define BYTE4_IN_SPI_PACKAGE	4
 	#define SPI_PACKAGE_TIMEOUT		20
 
 /*
@@ -146,6 +146,12 @@ typedef enum {
 **************************************************************************
 */
 	void max7219_init2	( max7219_struct 		*max7219_handler	,
+						max7219_Decode_Mode 	_decodemode			,
+						max7219_LED_Intensity	_intensity			,
+						max7219_Scan_Limit 		_scanlimit	 		,
+						max7219_Shutdown 		_shutdown 			);
+
+	void max7219_init4	( max7219_struct 		*max7219_handler	,
 						max7219_Decode_Mode 	_decodemode			,
 						max7219_LED_Intensity	_intensity			,
 						max7219_Scan_Limit 		_scanlimit	 		,
