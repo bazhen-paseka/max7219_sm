@@ -24,6 +24,7 @@
 **************************************************************************
 */
 	#include "main.h"
+	#include "max7219_local_config.h"
 
 /*
 **************************************************************************
@@ -109,19 +110,6 @@ typedef enum {
 
 /*
 **************************************************************************
-*								    DEFINES
-**************************************************************************
-*/
-
-	#define PANEL_QNT				2
-	#define LINE_IN_PANEL			8
-	#define	WRITE_STROB_DELAY		10
-	#define BYTE_IN_SPI_PACKAGE		2
-	#define BYTE4_IN_SPI_PACKAGE	4
-	#define SPI_PACKAGE_TIMEOUT		20
-
-/*
-**************************************************************************
 *								    STRUCT
 **************************************************************************
 */
@@ -131,7 +119,7 @@ typedef struct {
 	GPIO_TypeDef 		*cs_port;
     uint16_t 			 cs_pin;
     uint8_t				data [LINE_IN_PANEL];
-	uint8_t				panel[PANEL_QNT][LINE_IN_PANEL];
+	uint8_t				panel[MAX7219_QNT][LINE_IN_PANEL];
 } max7219_struct;
 //----------------------------------
 
