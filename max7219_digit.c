@@ -146,9 +146,9 @@ void _max7219_print_one_digit(	max7219_struct 	_max7219_handler	,
 	spi_buffer[2] = _position	; // razryad
 	spi_buffer[3] = _value2		; // znachenie
 	//	The decimal point is set by bit D7 = 1
-	if (_position == 3 ) {
-		spi_buffer[1] = 0x80 + spi_buffer[1] ;
-		spi_buffer[3] = 0x80 + spi_buffer[3] ;
+	if (_position == 4 ) {
+		//spi_buffer[1] = 0x80 + spi_buffer[1] ;
+		spi_buffer[3] = 0x80 + spi_buffer[3] ;	// in second digit first point
 	}
 	HAL_SPI_Transmit( _max7219_handler.spi , spi_buffer , 4 , SPI_PACKAGE_TIMEOUT ) ;
 	_max7219_write_strob( _max7219_handler ) ;
