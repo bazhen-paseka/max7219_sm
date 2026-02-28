@@ -1,76 +1,179 @@
-#include "stm32f1xx_hal.h"
 #include "max7219_digit.h"
 
-#define CS_PORT SPI1_CS_GPIO_Port
-#define CS_PIN  SPI1_CS_Pin
 
-void max7219_write_strob(void)
-{
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(CS_PORT,CS_PIN,SET);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(CS_PORT,CS_PIN,RESET);
-	HAL_Delay(1);
-}
+void _max7219_print_one_digit	( max7219_struct 	_max7219_handler 	,
+								uint8_t 			_position 			,
+								uint32_t 			_value1				,
+								uint32_t 			_value2				) ;
 
-void max7219_print_number(SPI_HandleTypeDef *hspi,int number,int position)
-{
-	if (position == 0) position = 4;
-	else 			position = 0;
-	max7219_print_one_digit(hspi, 4 + position, (number/1000) % 10 );
-	max7219_print_one_digit(hspi, 3 + position, (number/100 ) % 10 );
-	max7219_print_one_digit(hspi, 2 + position, (number/10  ) % 10 );
-	max7219_print_one_digit(hspi, 1 + position, (number     ) % 10 );
-}
+void _max7219_write_strob		( max7219_struct 	_max7219_handler	) ;
+void _max7219_push_data			( max7219_struct 	_max7219_handler	) ;
+void _local_delay				( uint32_t 			_delay_u32			) ;
+uint8_t inverse_order_in_byte	( uint8_t 			_input 				) ;
 
-void max7219_print_one_digit(SPI_HandleTypeDef *hspi,int position,int digit)
-{
-	uint8_t myTrans[2];
-	myTrans[0] = position	; // razryad
-	myTrans[1] = digit	; // znachenie
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
-}
+/***************************************************************************************/
+/***************************************************************************************/
 
-void max7219_init(SPI_HandleTypeDef *hspi)
-{
-	uint8_t myTrans[2];
-	HAL_GPIO_WritePin(CS_PORT,CS_PIN,RESET);
-
-	// test - On
-	myTrans[0] = 0x0F;  myTrans[1] = 0x01;
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
-
-	HAL_Delay(1000);
+void max7219_init2(	max7219_struct 			*_max7219_handler	,
+					max7219_Decode_Mode 	_decodemode			,
+					max7219_LED_Intensity	_intensity			,
+					max7219_Scan_Limit 		_scanlimit			,
+					max7219_Shutdown 		_shutdown 			) {
 
 	// test - Off
-	myTrans[0] = 0x0F;  myTrans[1] = 0x00;
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
+	_max7219_handler->data[ 0] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ 1] = WorkMode ;
+	_max7219_handler->data[ 2] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ 3] = WorkMode ;
+	_max7219_handler->data[ 4] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ 5] = WorkMode ;
+	_max7219_handler->data[ 6] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ 7] = WorkMode ;
+	_max7219_push_data( *_max7219_handler ) ;
 
-	// Decode Mode - No 1 in 1
-	// myTrans[1] hex   -> FF
-	// myTrans[1] pixel -> 00
-	int DecodeMode = 0xFF;
-	myTrans[0] = 0x09;  myTrans[1] = DecodeMode;	// pixel
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
+	// Decode Mode - No. 1 in 1
+	_max7219_handler->data[ 0] = ADDR_DECODE_MODE ;  _max7219_handler->data[ 1] = _decodemode ;
+	_max7219_handler->data[ 2] = ADDR_DECODE_MODE ;  _max7219_handler->data[ 3] = _decodemode ;
+	_max7219_handler->data[ 4] = ADDR_DECODE_MODE ;  _max7219_handler->data[ 5] = _decodemode ;
+	_max7219_handler->data[ 6] = ADDR_DECODE_MODE ;  _max7219_handler->data[ 7] = _decodemode ;
+	_max7219_push_data( *_max7219_handler ) ;
 
-	// Intensity 3/32 0x01,
-	myTrans[0] = 0x0A;  myTrans[1] = 0x03;
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
+	// Intensity x/32
+	_max7219_handler->data[ 0] = ADDR_INTENSITY ;  _max7219_handler->data[ 1] = _intensity ;
+	_max7219_handler->data[ 2] = ADDR_INTENSITY ;  _max7219_handler->data[ 3] = _intensity ;
+	_max7219_handler->data[ 4] = ADDR_INTENSITY ;  _max7219_handler->data[ 5] = _intensity ;
+	_max7219_handler->data[ 6] = ADDR_INTENSITY ;  _max7219_handler->data[ 7] = _intensity ;
+	_max7219_push_data( *_max7219_handler ) ;
 
 	//Scan Limit - All
-	myTrans[0] = 0x0B;  myTrans[1] = 0x07;
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
+	_max7219_handler->data[ 0] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ 1] = _scanlimit ;
+	_max7219_handler->data[ 2] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ 3] = _scanlimit ;
+	_max7219_handler->data[ 4] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ 5] = _scanlimit ;
+	_max7219_handler->data[ 6] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ 7] = _scanlimit ;
+	_max7219_push_data( *_max7219_handler ) ;
 
 	// Shutdown - none
 	// myTrans[1] -> 00 sleep
 	// myTrans[1] -> 01 work
-	myTrans[0] = 0x0C;  myTrans[1] = 0x01;
-	HAL_SPI_Transmit(hspi,myTrans,2,1);
-	max7219_write_strob();
+	_max7219_handler->data[ 0] = ADDR_SHUTDOWN;  _max7219_handler->data[ 1] = _shutdown;
+	_max7219_handler->data[ 2] = ADDR_SHUTDOWN;  _max7219_handler->data[ 3] = _shutdown;
+	_max7219_handler->data[ 4] = ADDR_SHUTDOWN;  _max7219_handler->data[ 5] = _shutdown;
+	_max7219_handler->data[ 6] = ADDR_SHUTDOWN;  _max7219_handler->data[ 7] = _shutdown;
+	_max7219_push_data( *_max7219_handler ) ;
+}
+/***************************************************************************************/
+/***************************************************************************************/
+
+void max7219_init4(	max7219_struct 			*_max7219_handler	,
+					max7219_Display_Test	_workmode			,
+					max7219_Decode_Mode 	_decodemode			,
+					max7219_LED_Intensity	_intensity			,
+					max7219_Scan_Limit 		_scanlimit			,
+					max7219_Shutdown 		_shutdown 			) {
+
+	// test - Off
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_DISPLAY_TEST ;  _max7219_handler->data[ i*2+1] = _workmode ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Decode Mode - No. 1 in 1
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_DECODE_MODE ;  _max7219_handler->data[ i*2+1] = _decodemode ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Intensity x/32
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_INTENSITY ;  _max7219_handler->data[ i*2+1] = _intensity ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	//Scan Limit - All
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_SCAN_LIMIT ;  _max7219_handler->data[ i*2+1] = _scanlimit ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+
+	// Shutdown - none
+	// myTrans[1] -> 00 sleep
+	// myTrans[1] -> 01 work
+	for (int i=0; i< MAX7219_QNT; i++) {
+		_max7219_handler->data[ i*2 ] = ADDR_SHUTDOWN ;  _max7219_handler->data[ i*2+1] = _shutdown ;
+	}
+	_max7219_push_data( *_max7219_handler ) ;
+}
+/***************************************************************************************/
+
+void _max7219_push_data( max7219_struct 	_max7219_handler ) {
+    HAL_SPI_Transmit( _max7219_handler.spi , _max7219_handler.data , BYTE4_IN_SPI_PACKAGE , SPI_PACKAGE_TIMEOUT ) ;
+    _max7219_write_strob( _max7219_handler ) ;
+}
+/***************************************************************************************/
+
+void _max7219_write_strob( max7219_struct 	_max7219_handler ) {
+	HAL_GPIO_WritePin( _max7219_handler.cs_port , _max7219_handler.cs_pin , SET ) ;
+	_local_delay( WRITE_STROB_DELAY ) ;
+	HAL_GPIO_WritePin( _max7219_handler.cs_port , _max7219_handler.cs_pin , RESET ) ;
+}
+/***************************************************************************************/
+
+void _local_delay ( uint32_t _delay_u32 ) {
+	for ( ; _delay_u32 > 0; _delay_u32-- ) {
+		__asm( "nop" ) ;
+	}
+}
+/***************************************************************************************/
+
+void max7219_print_value(	max7219_struct	*max7219_handler	,
+							uint32_t 		value1				,
+							uint32_t		value2				,
+							position_enum 	position			) {
+
+	_max7219_print_one_digit(*max7219_handler, position + 4, (value2/1000) % 10 , (value1/1000) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 3, (value2/100 ) % 10 , (value1/100 ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 2, (value2/10  ) % 10 , (value1/10  ) % 10 );
+	_max7219_print_one_digit(*max7219_handler, position + 1, (value2     ) % 10 , (value1     ) % 10 );
+}
+/***************************************************************************************/
+/***************************************************************************************/
+
+
+void _max7219_print_one_digit(	max7219_struct 	_max7219_handler	,
+								uint8_t 		_position			,
+								uint32_t 		_value1				,
+								uint32_t 		_value2				) {
+
+	uint8_t spi_buffer[4]		;
+	spi_buffer[0] = _position	; // razryad
+	spi_buffer[1] = _value1		; // znachenie
+	spi_buffer[2] = _position	; // razryad
+	spi_buffer[3] = _value2		; // znachenie
+	//	The decimal point is set by bit D7 = 1
+	if (_position == 4 ) {
+		//spi_buffer[1] = 0x80 + spi_buffer[1] ;
+		spi_buffer[3] = 0x80 + spi_buffer[3] ;	// in second digit first point
+	}
+	HAL_SPI_Transmit( _max7219_handler.spi , spi_buffer , 4 , SPI_PACKAGE_TIMEOUT ) ;
+	_max7219_write_strob( _max7219_handler ) ;
+}
+/***************************************************************************************/
+
+uint8_t inverse_order_in_byte (uint8_t 		input) {
+
+    uint8_t var_u8 =((input & 0x01) << 7) |
+					((input & 0x02) << 5) |
+					((input & 0x04) << 3) |
+					((input & 0x08) << 1) |
+					((input & 0x10) >> 1) |
+					((input & 0x20) >> 3) |
+					((input & 0x40) >> 5) |
+					((input & 0x80) >> 7) ;
+    return var_u8 ;
+}
+/***************************************************************************************/
+
+void max7219_print_value4(	max7219_struct	*max7219_handler	,
+							uint32_t		value1				,
+							uint32_t		value2				,
+							uint32_t		value3				,
+							uint32_t		value4				) {
+	max7219_print_value( max7219_handler, value1, value3, 4 );
+	max7219_print_value( max7219_handler, value2, value4, 0 );
 }
