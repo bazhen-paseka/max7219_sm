@@ -2,7 +2,8 @@
 * \file
 * \version 1.0
 * \author bazhen.levkovets
-** \date 2018
+* \date 2018
+* \date 2026-II-28
 *
 *************************************************************************************
 * \copyright	Bazhen Levkovets
@@ -33,15 +34,15 @@
 */
 
 typedef enum {
-	NoDecode			= 0x00 ,
-	DecodeForDigit_0	= 0x01 ,
+	NoDecode			= 0x00 ,	// No decode: Пряме керування всіма сегментами (ідеально для матриць).
+	DecodeForDigit_0	= 0x01 ,	// Декодування тільки для цифри 0, інші — вручну.
 	DecodeForDigit_1_0	= 0x03 ,
 	DecodeForDigit_2_0	= 0x07 ,
-	DecodeForDigit_3_0	= 0x0F ,
+	DecodeForDigit_3_0	= 0x0F ,	// Декодування для цифр 0–3, інші (4–7) — вручну.
 	DecodeForDigit_4_0	= 0x1F ,
 	DecodeForDigit_5_0	= 0x3F ,
 	DecodeForDigit_6_0	= 0x7F ,
-	DecodeForDigit_7_0	= 0xFF ,
+	DecodeForDigit_7_0	= 0xFF ,	// Code B decode: Усі 8 розрядів працюють у режимі цифр.
 }		max7219_Decode_Mode ;
 //----------------------------------
 
@@ -66,14 +67,14 @@ typedef enum {
 //----------------------------------
 
 typedef enum {
-	DisplayDigit_0_only	=	0x00 ,
-	DisplayDigit_0_1	=	0x01 ,
-	DisplayDigit_0_2	=	0x02 ,
-	DisplayDigit_0_3	=	0x03 ,
-	DisplayDigit_0_4	=	0x04 ,
-	DisplayDigit_0_5	=	0x05 ,
-	DisplayDigit_0_6	=	0x06 ,
-	DisplayDigit_0_7	=	0x07
+	DisplayDigit_1_only	=	0x00 ,
+	DisplayDigit_1_2	=	0x01 ,
+	DisplayDigit_1_3	=	0x02 ,
+	DisplayDigit_1_4	=	0x03 ,
+	DisplayDigit_1_5	=	0x04 ,
+	DisplayDigit_1_6	=	0x05 ,
+	DisplayDigit_1_7	=	0x06 ,
+	DisplayDigit_1_8	=	0x07
 }		max7219_Scan_Limit ;
 //----------------------------------
 
